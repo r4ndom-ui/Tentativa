@@ -10,11 +10,11 @@ GitHub Actions installs Java 21 and Gradle 8.12, then runs `gradle build` from t
 - Cobblemon 1.8.4 compile dependency; runtime metadata accepts Cobblemon >=1.8.0 and <1.9.0.
 - Persistent per-player configuration stored in `config/ctbs-player-state.json`.
 - Per-species capacity overrides with a free numeric command value (0–100000).
-- Conservative default capacities: Eevee 2, Lucario 4, Gengar 7, Zoroark 5, Greninja 4, Scolipede/Snorlax 15, other species 3.
+- Conservative default capacities: Eevee 2, Gengar 7, Zoroark 5, Greninja 4, Scolipede/Snorlax 15, other species 3; Lucario uses the generic default unless customized.
 - Persistent stomach policy selection: HOLD, HEAL, DIGEST.
 - Persistent posture selection: STAND, SIT, LIE, NAP.
 - Posture multiplier values exposed to future gameplay systems: 1.0x, 1.2x, 1.4x and 1.6x.
-- Client keybinding (O by default) and settings screen for species capacity, stomach policy and posture.
+- Client keybinding (O by default) and a dark-fantasy settings screen for species capacity, stomach policy and posture.\n- Capacity can be adjusted with a slider or entered as an exact number (0–100000); both controls stay synchronized.
 - Brazilian Portuguese and English UI strings.
 
 ## Commands
