@@ -8,7 +8,7 @@ GitHub Actions installs Java 21 and Gradle 8.12, then runs `gradle build` from t
 ## Implemented in 1.5.0-alpha
 - Fabric Loom build with split main/client source sets.
 - Cobblemon 1.8.4 compile dependency; runtime metadata accepts Cobblemon >=1.8.0 and <1.9.0.
-- Persistent per-player configuration stored in `config/ctbs-player-state.json`.
+- Persistent per-player configuration stored in `config/ctbs-player-state.json`, with an automatic `.bak` recovery copy when the primary file is unreadable.
 - Per-species capacity overrides editable in the in-game menu with a synchronized slider and exact numeric field (0–100000), plus a one-click reset to the species default.
 - Conservative default capacities: Eevee 2, Gengar 7, Zoroark 5, Greninja 4, Scolipede/Snorlax 15, other species 3; Lucario uses the generic default unless customized.
 - Persistent stomach policy selection: HOLD, HEAL, DIGEST.
@@ -34,4 +34,4 @@ This alpha does not yet capture or store live entities/Pokémon, restore Cobblem
 The Cobblemon dependency is currently used for compile/runtime compatibility metadata; no Cobblemon-specific API calls are implemented yet.
 
 ## Test status
-GitHub Actions run 40 completed successfully. Its `ctbs-build` artifact was uploaded (artifact ID 14940374147, 30,607 bytes). Run 39 also passed after removing duplicate capacity helper declarations. This validates compilation and packaging only; in-game behavior, multiplayer persistence, and Cobblemon entity handling still need manual testing. Back up worlds before testing experimental builds.
+GitHub Actions run 45 completed successfully, including the JUnit 5 setup and capacity regression test task. Run 46 validates the new backup/recovery persistence change and is currently in progress. Its `ctbs-build` artifact was uploaded (artifact ID 14940374147, 30,607 bytes). Run 39 also passed after removing duplicate capacity helper declarations. This validates compilation and packaging only; in-game behavior, multiplayer persistence, and Cobblemon entity handling still need manual testing. Back up worlds before testing experimental builds.
