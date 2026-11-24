@@ -1,0 +1,14 @@
+{
+  "key.ctbs.open_menu": "Open CTBS menu",
+  "category.ctbs": "CTBS",
+  "screen.ctbs.title": "CTBS - Stomach Settings",
+  "screen.ctbs.save_capacity": "Save capacity",
+  "screen.ctbs.capacity_hint": "Species and custom numeric capacity",
+  "screen.ctbs.hold": "Hold",
+  "screen.ctbs.heal": "Heal",
+  "screen.ctbs.digest": "Digest",
+  "screen.ctbs.sit": "Sit",
+  "screen.ctbs.lie": "Lie down",
+  "screen.ctbs.nap": "Nap",
+  "screen.ctbs.close": "Close"
+}
