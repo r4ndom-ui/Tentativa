@@ -135,13 +135,11 @@ public final class CTBSPlayerState {
 
     /** Stores an already-serialized Cobblemon Pokémon payload. The caller must only remove the live entity after this returns true. */
     public static synchronized boolean storePokemon(UUID playerId, UUID pokemonId, String serializedPokemon, int capacity) {
-        if (pokemonId == null || serializedPokemon == null || serializedPokemon.isBlank() || serializedPokemon.length() > 2_000_000) return false;
-        if (capacity < 0 || capacity > 100000) return false;
+        if (playerId == null) return false;
         PlayerData data = PLAYERS.computeIfAbsent(playerId, ignored -> new PlayerData());
         data.sanitize();
+        if (!CTBSPokemonStorageRules.canStore(data.storedPokemon, pokemonId, serializedPokemon, capacity)) return false;
         String key = pokemonId.toString();
-        if (data.storedPokemon.containsKey(key)) return false;
-        if (data.storedPokemon.size() >= capacity) return false;
         data.storedPokemon.put(key, serializedPokemon);
         save();
         return true;
