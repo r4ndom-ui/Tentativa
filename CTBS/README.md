@@ -14,7 +14,9 @@ GitHub Actions installs Java 21 and Gradle 8.12, then runs `gradle build` from t
 - Persistent stomach policy selection: HOLD, HEAL, DIGEST.
 - Persistent posture selection: STAND, SIT, LIE, NAP.
 - Posture multiplier values exposed to future gameplay systems: 1.0x, 1.2x, 1.4x and 1.6x.
-- Client keybinding (O by default) and a dark-fantasy settings screen for species capacity, stomach policy and posture.
+- Client keybinding (O by default), configurable in Minecraft Controls, and a dark-fantasy multi-tab screen: Creature, Stomach, Actions and Status.
+- Stomach and posture tabs issue the existing server commands; Status displays current mode, posture and multiplier in chat.
+- Creature tab supports exact numeric capacity entry synchronized with a slider.
 - Capacity can be adjusted with a slider or entered as an exact number (0–100000); both controls stay synchronized.
 - Brazilian Portuguese and English UI strings.
 
@@ -31,4 +33,4 @@ This alpha does not yet capture or store live entities/Pokémon, restore Cobblem
 The Cobblemon dependency is currently used for compile/runtime compatibility metadata; no Cobblemon-specific API calls are implemented yet.
 
 ## Test status
-The GitHub Actions build passed for the initial server-state and command milestones. The client screen and synchronized numeric/slider capacity control compile successfully in GitHub Actions run 26. The workflow artifact `ctbs-build` was produced; in-game behavior still needs manual testing. A successful Gradle build does not replace in-game client/server testing. Back up worlds before testing experimental builds.
+The GitHub Actions build passed for the initial server-state and command milestones. The previous client screen and synchronized numeric/slider capacity control compiled successfully in GitHub Actions run 26. The new multi-tab screen is being validated in GitHub Actions run 29. The workflow artifact `ctbs-build` was produced; in-game behavior still needs manual testing. A successful Gradle build does not replace in-game client/server testing. Back up worlds before testing experimental builds.
