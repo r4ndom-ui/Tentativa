@@ -22,7 +22,7 @@ GitHub Actions installs Java 21 and Gradle 8.12, then runs `gradle build` from t
 
 ## Commands
 - `/ctbs capacity get <species>`
-- `/ctbs capacity set <species> <number>`
+- `/ctbs capacity set <species> <number>`\n- `/ctbs capacity reset <species>` (removes the personal override and restores the species base value)
 - `/ctbs stomach status`
 - `/ctbs stomach mode hold|heal|digest`
 - `/ctbs action stand|sit|lie|nap`
