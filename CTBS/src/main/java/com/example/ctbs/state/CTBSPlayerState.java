@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 
@@ -132,6 +133,36 @@ public final class CTBSPlayerState {
         save();
     }
 
+    /** Stores an already-serialized Cobblemon Pokémon payload. The caller must only remove the live entity after this returns true. */
+    public static synchronized boolean storePokemon(UUID playerId, UUID pokemonId, String serializedPokemon, int capacity) {
+        if (pokemonId == null || serializedPokemon == null || serializedPokemon.isBlank() || serializedPokemon.length() > 2_000_000) return false;
+        if (capacity < 0 || capacity > 100000) return false;
+        PlayerData data = PLAYERS.computeIfAbsent(playerId, ignored -> new PlayerData());
+        data.sanitize();
+        String key = pokemonId.toString();
+        if (data.storedPokemon.containsKey(key)) return false;
+        if (data.storedPokemon.size() >= capacity) return false;
+        data.storedPokemon.put(key, serializedPokemon);
+        save();
+        return true;
+    }
+
+    public static synchronized Map<String, String> getStoredPokemon(UUID playerId) {
+        PlayerData data = PLAYERS.get(playerId);
+        if (data == null) return Collections.emptyMap();
+        data.sanitize();
+        return Collections.unmodifiableMap(new HashMap<>(data.storedPokemon));
+    }
+
+    /** Removes a stored record only after the caller has successfully restored the Pokémon entity. */
+    public static synchronized boolean removeStoredPokemon(UUID playerId, UUID pokemonId) {
+        PlayerData data = PLAYERS.get(playerId);
+        if (data == null || pokemonId == null) return false;
+        if (data.storedPokemon.remove(pokemonId.toString()) == null) return false;
+        save();
+        return true;
+    }
+
     public static synchronized void setMode(UUID playerId, StomachMode mode) {
         PLAYERS.computeIfAbsent(playerId, ignored -> new PlayerData()).mode = mode.name();
         save();
@@ -154,11 +185,18 @@ public final class CTBSPlayerState {
         public String mode = StomachMode.HOLD.name();
         public String posture = Posture.STAND.name();
         public Map<String, Integer> capacityOverrides = new HashMap<>();
+        /** Cobblemon Codec JSON keyed by the original Pokémon UUID; no partial entity reconstruction. */
+        public Map<String, String> storedPokemon = new HashMap<>();
 
         private void sanitize() {
             try { StomachMode.valueOf(mode); } catch (Exception ignored) { mode = StomachMode.HOLD.name(); }
             try { Posture.valueOf(posture); } catch (Exception ignored) { posture = Posture.STAND.name(); }
             if (capacityOverrides == null) capacityOverrides = new HashMap<>();
+            if (storedPokemon == null) storedPokemon = new HashMap<>();
+            storedPokemon.entrySet().removeIf(entry -> {
+                try { UUID.fromString(entry.getKey()); } catch (Exception invalid) { return true; }
+                return entry.getValue() == null || entry.getValue().isBlank() || entry.getValue().length() > 2_000_000;
+            });
             capacityOverrides.entrySet().removeIf(entry -> entry.getKey() == null || entry.getValue() == null || entry.getValue() < 0 || entry.getValue() > 100000);
         }
 
@@ -167,6 +205,7 @@ public final class CTBSPlayerState {
             copy.mode = mode;
             copy.posture = posture;
             copy.capacityOverrides = new HashMap<>(capacityOverrides);
+            copy.storedPokemon = new HashMap<>(storedPokemon);
             return copy;
         }
 
