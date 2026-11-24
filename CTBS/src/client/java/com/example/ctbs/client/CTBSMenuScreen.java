@@ -21,7 +21,8 @@ public final class CTBSMenuScreen extends Screen {
     private TextFieldWidget speciesField;
     private TextFieldWidget capacityField;
     private CapacitySlider capacitySlider;
-    private boolean syncingCapacity;\n    private String selectedSpecies = "eevee";
+    private boolean syncingCapacity;
+    private String selectedSpecies = "eevee";
 
     public CTBSMenuScreen() {
         super(Text.translatable("screen.ctbs.title"));
@@ -68,8 +69,10 @@ public final class CTBSMenuScreen extends Screen {
         capacityField.setMaxLength(6);
         capacityField.setChangedListener(this::onCapacityTextChanged);
         capacitySlider = addDrawableChild(new CapacitySlider(left + 18, top + 137, 332, 20, 2));
-        addDrawableChild(ButtonWidget.builder(Text.literal("APLICAR CAPACIDADE"), b -> saveCapacity())
-            .dimensions(left + 18, top + 174, 332, 20).build());
+        addDrawableChild(ButtonWidget.builder(Text.literal("APLICAR"), b -> saveCapacity())
+            .dimensions(left + 18, top + 174, 160, 20).build());
+        addDrawableChild(ButtonWidget.builder(Text.literal("RESTAURAR PADRÃO"), b -> resetCapacity())
+            .dimensions(left + 190, top + 174, 160, 20).build());
     }
 
     private void buildStomachTab(int left, int top) {
@@ -126,10 +129,18 @@ public final class CTBSMenuScreen extends Screen {
         if (!species.matches("[a-z0-9_]+") || !value.matches("[0-9]{1,6}")) return;
         int parsed = Integer.parseInt(value);
         if (parsed > 100000) return;
+        selectedSpecies = species;
         send("ctbs capacity set " + species + " " + parsed);
     }
 
-    private void resetCapacity() {\n        String species = speciesField.getText().trim().toLowerCase(Locale.ROOT);\n        if (!species.matches("[a-z0-9_]+")) return;\n        selectedSpecies = species;\n        send("ctbs capacity reset " + species);\n    }\n\n    private void send(String command) {
+    private void resetCapacity() {
+        String species = speciesField.getText().trim().toLowerCase(Locale.ROOT);
+        if (!species.matches("[a-z0-9_]+")) return;
+        selectedSpecies = species;
+        send("ctbs capacity reset " + species);
+    }
+
+    private void send(String command) {
         if (client != null && client.player != null) client.player.networkHandler.sendChatCommand(command);
     }
 
