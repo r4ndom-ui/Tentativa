@@ -1,12 +1,33 @@
 # CTBS — Cobblemon Transformation & Belly System
 
-Experimental Fabric mod scaffold for Minecraft 1.21.1 and Java 21.
+Experimental Fabric mod for Minecraft 1.21.1, Java 21 and Cobblemon 1.8.x.
 
 ## Build
-CI installs Java 21 and Gradle, then runs `gradle build`.
+GitHub Actions installs Java 21 and Gradle 8.12, then runs `gradle build` from this directory. The JAR is uploaded as the `ctbs-build` workflow artifact.
 
-## Current milestone
-This repository bootstrap establishes a reproducible Fabric Loom build. The earlier alpha archive remains a design baseline, but its classes have not yet been migrated into this clean build scaffold. No capture, stomach, digestion, Cobblemon transformation, animation, or 3D model feature is claimed implemented by this bootstrap.
+## Implemented in 1.5.0-alpha
+- Fabric Loom build with split main/client source sets.
+- Cobblemon 1.8.4 compile dependency; runtime metadata accepts Cobblemon >=1.8.0 and <1.9.0.
+- Persistent per-player configuration stored in `config/ctbs-player-state.json`.
+- Per-species capacity overrides with a free numeric command value (0–100000).
+- Conservative default capacities: Eevee 2, Lucario 4, Gengar 7, Zoroark 5, Greninja 4, Scolipede/Snorlax 15, other species 3.
+- Persistent stomach policy selection: HOLD, HEAL, DIGEST.
+- Persistent posture selection: STAND, SIT, LIE, NAP.
+- Posture multiplier values exposed to future gameplay systems: 1.0x, 1.2x, 1.4x and 1.6x.
+- Client keybinding (O by default) and settings screen for species capacity, stomach policy and posture.
+- Brazilian Portuguese and English UI strings.
 
-## Compatibility
-Cobblemon integration is not yet compiled against a Cobblemon API dependency. Pin and validate the exact Cobblemon release before adding the dependency.
+## Commands
+- `/ctbs capacity get <species>`
+- `/ctbs capacity set <species> <number>`
+- `/ctbs stomach status`
+- `/ctbs stomach mode hold|heal|digest`
+- `/ctbs action stand|sit|lie|nap`
+
+## Not implemented yet
+This alpha does not yet capture or store live entities/Pokémon, restore Cobblemon Pokémon data, run actual healing or digestion ticks, create reward drops, sync an entity stomach inventory, implement transformation support from Explorers of the Rift, or include belly/creature models and animations. The policy and posture settings are persistent selection/state only; their gameplay effects must still be connected.
+
+The Cobblemon dependency is currently used for compile/runtime compatibility metadata; no Cobblemon-specific API calls are implemented yet.
+
+## Test status
+The GitHub Actions build passed for the initial server-state and command milestones. The latest build including the client screen, split source sets and pinned Cobblemon dependency is being validated. A successful Gradle build does not replace in-game client/server testing. Back up worlds before testing experimental builds.
