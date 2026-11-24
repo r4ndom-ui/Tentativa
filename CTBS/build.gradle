@@ -5,6 +5,17 @@ plugins {
 version = project.mod_version
 group = project.maven_group
 base { archivesName = project.archives_base_name }
+
+loom {
+    splitEnvironmentSourceSets()
+    mods {
+        ctbs {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
+}
+
 repositories {
     maven { url = 'https://maven.fabricmc.net/' }
     mavenCentral()
