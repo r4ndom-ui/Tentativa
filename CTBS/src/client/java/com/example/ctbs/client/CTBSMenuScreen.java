@@ -64,6 +64,7 @@ public final class CTBSMenuScreen extends Screen {
         speciesField = addDrawableChild(new TextFieldWidget(textRenderer, left + 18, top + 100, 220, 20, Text.literal("Espécie")));
         speciesField.setText(selectedSpecies);
         speciesField.setMaxLength(48);
+        speciesField.setChangedListener(value -> selectedSpecies = value.trim().toLowerCase(Locale.ROOT));
         capacityField = addDrawableChild(new TextFieldWidget(textRenderer, left + 258, top + 100, 92, 20, Text.literal("Capacidade")));
         capacityField.setText("2");
         capacityField.setMaxLength(6);
@@ -99,7 +100,7 @@ public final class CTBSMenuScreen extends Screen {
         addDrawableChild(ButtonWidget.builder(Text.literal("CONSULTAR ESTADO NO CHAT"), b -> send("ctbs stomach status"))
             .dimensions(left + 18, top + 112, 332, 22).build());
         addDrawableChild(ButtonWidget.builder(Text.literal("CONSULTAR CAPACIDADE DA ESPÉCIE"), b -> {
-            String species = selectedSpecies;
+            String species = speciesField == null ? selectedSpecies : speciesField.getText().trim().toLowerCase(Locale.ROOT);
             if (species.matches("[a-z0-9_]+")) send("ctbs capacity get " + species);
         }).dimensions(left + 18, top + 145, 332, 22).build());
     }
