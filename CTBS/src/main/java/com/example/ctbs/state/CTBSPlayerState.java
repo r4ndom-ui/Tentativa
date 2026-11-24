@@ -84,7 +84,35 @@ public final class CTBSPlayerState {
         return baseCapacity(key);
     }
 
-    public static synchronized boolean hasCapacityOverride(UUID playerId, String species) {\n        PlayerData data = PLAYERS.get(playerId);\n        return data != null && data.capacityOverrides.containsKey(normalize(species));\n    }\n\n    public static synchronized void resetCapacity(UUID playerId, String species) {\n        PlayerData data = PLAYERS.get(playerId);\n        if (data != null && data.capacityOverrides.remove(normalize(species)) != null) save();\n    }\n\n    public static synchronized int getBaseCapacity(String species) {\n        return baseCapacity(normalize(species));\n    }\n\n    public static synchronized void setCapacity(UUID playerId, String species, int capacity) {
+    public static synchronized boolean hasCapacityOverride(UUID playerId, String species) {
+        PlayerData data = PLAYERS.get(playerId);
+        return data != null && data.capacityOverrides.containsKey(normalize(species));
+    }
+
+    public static synchronized void resetCapacity(UUID playerId, String species) {
+        PlayerData data = PLAYERS.get(playerId);
+        if (data != null && data.capacityOverrides.remove(normalize(species)) != null) save();
+    }
+
+    public static synchronized int getBaseCapacity(String species) {
+        return baseCapacity(normalize(species));
+    }
+
+    public static synchronized boolean hasCapacityOverride(UUID playerId, String species) {
+        PlayerData data = PLAYERS.get(playerId);
+        return data != null && data.capacityOverrides.containsKey(normalize(species));
+    }
+
+    public static synchronized void resetCapacity(UUID playerId, String species) {
+        PlayerData data = PLAYERS.get(playerId);
+        if (data != null && data.capacityOverrides.remove(normalize(species)) != null) save();
+    }
+
+    public static synchronized int getBaseCapacity(String species) {
+        return baseCapacity(normalize(species));
+    }
+
+    public static synchronized void setCapacity(UUID playerId, String species, int capacity) {
         if (capacity < 0 || capacity > 100000) throw new IllegalArgumentException("Capacity must be between 0 and 100000");
         PLAYERS.computeIfAbsent(playerId, ignored -> new PlayerData()).capacityOverrides.put(normalize(species), capacity);
         save();
