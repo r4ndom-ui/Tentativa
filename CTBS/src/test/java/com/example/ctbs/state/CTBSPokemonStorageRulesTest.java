@@ -36,6 +36,13 @@ class CTBSPokemonStorageRulesTest {
     }
 
     @Test
+    void rejectsMalformedJsonPayloads() {
+        assertFalse(CTBSPokemonStorageRules.canStore(new HashMap<>(), UUID.randomUUID(), "not-json", 3));
+        assertFalse(CTBSPokemonStorageRules.canStore(new HashMap<>(), UUID.randomUUID(), "[1, 2]", 3));
+        assertFalse(CTBSPokemonStorageRules.canStore(new HashMap<>(), UUID.randomUUID(), "\"text\"", 3));
+    }
+
+    @Test
     void rejectsInvalidCapacity() {
         assertFalse(CTBSPokemonStorageRules.canStore(new HashMap<>(), UUID.randomUUID(), "{}", -1));
         assertFalse(CTBSPokemonStorageRules.canStore(new HashMap<>(), UUID.randomUUID(), "{}", 100001));
