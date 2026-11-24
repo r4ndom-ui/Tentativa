@@ -1,5 +1,7 @@
 package com.example.ctbs.state;
 
+import com.google.gson.JsonParser;
+
 import java.util.Map;
 import java.util.UUID;
 
@@ -10,6 +12,15 @@ public final class CTBSPokemonStorageRules {
     public static boolean canStore(Map<String, String> stored, UUID pokemonId, String payload, int capacity) {
         if (stored == null || pokemonId == null || payload == null || payload.isBlank()) return false;
         if (payload.length() > 2_000_000 || capacity < 0 || capacity > 100000) return false;
+        if (!isJsonObject(payload)) return false;
         return !stored.containsKey(pokemonId.toString()) && stored.size() < capacity;
+    }
+
+    private static boolean isJsonObject(String payload) {
+        try {
+            return JsonParser.parseString(payload).isJsonObject();
+        } catch (RuntimeException invalidJson) {
+            return false;
+        }
     }
 }
