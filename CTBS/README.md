@@ -14,7 +14,8 @@ GitHub Actions installs Java 21 and Gradle 8.12, then runs `gradle build` from t
 - Persistent stomach policy selection: HOLD, HEAL, DIGEST.
 - Persistent posture selection: STAND, SIT, LIE, NAP.
 - Posture multiplier values exposed to future gameplay systems: 1.0x, 1.2x, 1.4x and 1.6x.
-- Client keybinding (O by default) and a dark-fantasy settings screen for species capacity, stomach policy and posture.\n- Capacity can be adjusted with a slider or entered as an exact number (0–100000); both controls stay synchronized.
+- Client keybinding (O by default) and a dark-fantasy settings screen for species capacity, stomach policy and posture.
+- Capacity can be adjusted with a slider or entered as an exact number (0–100000); both controls stay synchronized.
 - Brazilian Portuguese and English UI strings.
 
 ## Commands
