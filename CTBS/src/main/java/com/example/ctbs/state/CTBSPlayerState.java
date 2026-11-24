@@ -112,7 +112,6 @@ public final class CTBSPlayerState {
     private static int baseCapacity(String species) {
         return switch (species) {
             case "eevee" -> 2;
-            case "lucario" -> 4;
             case "gengar" -> 7;
             case "zoroark" -> 5;
             case "greninja" -> 4;
