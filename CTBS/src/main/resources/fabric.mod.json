@@ -5,7 +5,10 @@
   "name": "Cobblemon Transformation & Belly System",
   "description": "Experimental creature gameplay systems for Fabric.",
   "environment": "*",
-  "entrypoints": { "main": ["com.example.ctbs.CTBSMod"] },
+  "entrypoints": {
+    "main": ["com.example.ctbs.CTBSMod"],
+    "client": ["com.example.ctbs.client.CTBSClient"]
+  },
   "depends": {
     "fabricloader": ">=0.16.10",
     "minecraft": "~1.21.1",
