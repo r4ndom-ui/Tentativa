@@ -120,19 +120,34 @@ public final class CTBSPlayerState {
         return data != null && data.capacityOverrides.containsKey(normalize(species));
     }
 
-    public static synchronized void resetCapacity(UUID playerId, String species) {
+    public static synchronized boolean resetCapacity(UUID playerId, String species) {
         PlayerData data = PLAYERS.get(playerId);
-        if (data != null && data.capacityOverrides.remove(normalize(species)) != null) save();
+        if (data == null) return true;
+        String key = normalize(species);
+        Integer previous = data.capacityOverrides.remove(key);
+        if (previous == null) return true;
+        if (!save()) {
+            data.capacityOverrides.put(key, previous);
+            return false;
+        }
+        return true;
     }
 
     public static synchronized int getBaseCapacity(String species) {
         return CTBSCapacityRules.baseCapacity(species);
     }
 
-    public static synchronized void setCapacity(UUID playerId, String species, int capacity) {
+    public static synchronized boolean setCapacity(UUID playerId, String species, int capacity) {
         CTBSCapacityRules.validateOverride(capacity);
-        PLAYERS.computeIfAbsent(playerId, ignored -> new PlayerData()).capacityOverrides.put(normalize(species), capacity);
-        save();
+        PlayerData data = PLAYERS.computeIfAbsent(playerId, ignored -> new PlayerData());
+        String key = normalize(species);
+        Integer previous = data.capacityOverrides.put(key, capacity);
+        if (!save()) {
+            if (previous == null) data.capacityOverrides.remove(key);
+            else data.capacityOverrides.put(key, previous);
+            return false;
+        }
+        return true;
     }
 
     /** Stores an already-serialized Cobblemon Pokémon payload. The caller must only remove the live entity after this returns true. */
@@ -171,14 +186,26 @@ public final class CTBSPlayerState {
         return true;
     }
 
-    public static synchronized void setMode(UUID playerId, StomachMode mode) {
-        PLAYERS.computeIfAbsent(playerId, ignored -> new PlayerData()).mode = mode.name();
-        save();
+    public static synchronized boolean setMode(UUID playerId, StomachMode mode) {
+        PlayerData data = PLAYERS.computeIfAbsent(playerId, ignored -> new PlayerData());
+        String previous = data.mode;
+        data.mode = mode.name();
+        if (!save()) {
+            data.mode = previous;
+            return false;
+        }
+        return true;
     }
 
-    public static synchronized void setPosture(UUID playerId, Posture posture) {
-        PLAYERS.computeIfAbsent(playerId, ignored -> new PlayerData()).posture = posture.name();
-        save();
+    public static synchronized boolean setPosture(UUID playerId, Posture posture) {
+        PlayerData data = PLAYERS.computeIfAbsent(playerId, ignored -> new PlayerData());
+        String previous = data.posture;
+        data.posture = posture.name();
+        if (!save()) {
+            data.posture = previous;
+            return false;
+        }
+        return true;
     }
 
     public static float digestionMultiplier(Posture posture) {
