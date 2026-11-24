@@ -43,6 +43,19 @@ class CTBSPokemonStorageRulesTest {
     }
 
     @Test
+    void rejectsNullArgumentsAndNullStorage() {
+        assertFalse(CTBSPokemonStorageRules.canStore(null, UUID.randomUUID(), "{}", 3));
+        assertFalse(CTBSPokemonStorageRules.canStore(new HashMap<>(), null, "{}", 3));
+        assertFalse(CTBSPokemonStorageRules.canStore(new HashMap<>(), UUID.randomUUID(), null, 3));
+    }
+
+    @Test
+    void acceptsEmptyJsonObjectAndZeroCapacityOnlyWhenNoInsertIsAttempted() {
+        assertTrue(CTBSPokemonStorageRules.isValidPayload("{}"));
+        assertFalse(CTBSPokemonStorageRules.canStore(new HashMap<>(), UUID.randomUUID(), "{}", 0));
+    }
+
+    @Test
     void rejectsInvalidCapacity() {
         assertFalse(CTBSPokemonStorageRules.canStore(new HashMap<>(), UUID.randomUUID(), "{}", -1));
         assertFalse(CTBSPokemonStorageRules.canStore(new HashMap<>(), UUID.randomUUID(), "{}", 100001));
