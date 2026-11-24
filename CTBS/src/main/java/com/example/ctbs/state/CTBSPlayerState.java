@@ -12,7 +12,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -81,7 +80,7 @@ public final class CTBSPlayerState {
         PlayerData data = PLAYERS.get(playerId);
         String key = normalize(species);
         if (data != null && data.capacityOverrides.containsKey(key)) return data.capacityOverrides.get(key);
-        return baseCapacity(key);
+        return CTBSCapacityRules.baseCapacity(key);
     }
 
     public static synchronized boolean hasCapacityOverride(UUID playerId, String species) {
@@ -95,11 +94,11 @@ public final class CTBSPlayerState {
     }
 
     public static synchronized int getBaseCapacity(String species) {
-        return baseCapacity(normalize(species));
+        return CTBSCapacityRules.baseCapacity(species);
     }
 
     public static synchronized void setCapacity(UUID playerId, String species, int capacity) {
-        if (capacity < 0 || capacity > 100000) throw new IllegalArgumentException("Capacity must be between 0 and 100000");
+        CTBSCapacityRules.validateOverride(capacity);
         PLAYERS.computeIfAbsent(playerId, ignored -> new PlayerData()).capacityOverrides.put(normalize(species), capacity);
         save();
     }
@@ -123,19 +122,8 @@ public final class CTBSPlayerState {
         };
     }
 
-    private static int baseCapacity(String species) {
-        return switch (species) {
-            case "eevee" -> 2;
-            case "gengar" -> 7;
-            case "zoroark" -> 5;
-            case "greninja" -> 4;
-            case "scolipede", "snorlax" -> 15;
-            default -> 3;
-        };
-    }
-
     private static String normalize(String species) {
-        return species.trim().toLowerCase(Locale.ROOT).replace(' ', '_');
+        return CTBSCapacityRules.normalizeSpecies(species);
     }
 
     public static final class PlayerData {
