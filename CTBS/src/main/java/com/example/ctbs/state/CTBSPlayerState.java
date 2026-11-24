@@ -230,7 +230,7 @@ public final class CTBSPlayerState {
             if (storedPokemon == null) storedPokemon = new HashMap<>();
             storedPokemon.entrySet().removeIf(entry -> {
                 try { UUID.fromString(entry.getKey()); } catch (Exception invalid) { return true; }
-                return entry.getValue() == null || entry.getValue().isBlank() || entry.getValue().length() > 2_000_000;
+                return !CTBSPokemonStorageRules.isValidPayload(entry.getValue());
             });
             capacityOverrides.entrySet().removeIf(entry -> entry.getKey() == null || entry.getValue() == null || entry.getValue() < 0 || entry.getValue() > 100000);
         }
