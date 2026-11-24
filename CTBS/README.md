@@ -1,13 +1,13 @@
 # CTBS — Cobblemon Transformation & Belly System
 
-Experimental Fabric mod for Minecraft 1.21.1, Java 21 and Cobblemon 1.8.x.
+Experimental Fabric mod for Minecraft 1.21.1, Java 21 and Cobblemon 1.8.4 or newer within the 1.8.x line.
 
 ## Build
 GitHub Actions installs Java 21 and Gradle 8.12, then runs `gradle build` from this directory. The JAR is uploaded as the `ctbs-build` workflow artifact.
 
 ## Implemented in 1.5.0-alpha
 - Fabric Loom build with split main/client source sets.
-- Cobblemon 1.8.4 compile dependency; runtime metadata accepts Cobblemon >=1.8.0 and <1.9.0.
+- Cobblemon 1.8.4 compile dependency; runtime metadata requires Cobblemon >=1.8.4 and <1.9.0, matching the version used for the current build.
 - Persistent per-player configuration and serialized-Pokémon ledger stored in `config/ctbs-player-state.json`, with an automatic `.bak` recovery copy when the primary file is unreadable.
 - Server-side ledger primitives validate payload size, storage capacity, and duplicate Pokémon UUIDs before accepting a serialized record; stored records can be inspected and removed by UUID through the state API.
 - Per-species capacity overrides editable in the in-game menu with a synchronized slider and exact numeric field (0–100000), plus a one-click reset to the species default.
@@ -35,4 +35,4 @@ This alpha does not yet capture or store live entities/Pokémon, restore Cobblem
 The Cobblemon dependency is present for runtime compatibility, but no serialization bridge is currently included. Upstream Cobblemon source inspection confirms that `Pokemon` exposes registry-context-aware `saveToJSON` / `loadFromJSON` methods and a `CODEC`, and `PokemonEntity` exposes its `pokemon` property. The inspected upstream source uses Mojang-mapped `RegistryAccess`; this project uses Fabric/Yarn mappings, so the equivalent mapped type and the exact signatures in the pinned CurseMaven artifact still need to be verified before adding imports or enabling capture. A prior bridge using the Mojang class name directly failed under Yarn mappings and was removed to keep the baseline buildable. Do not remove a live entity until a serialized record is durably committed; release needs duplicate prevention and rollback.
 
 ## Test status
-GitHub Actions runs 64–71 completed successfully. Run 71 (`Expand capacity rule regression coverage`) passed, including compilation, JUnit tests and packaging. The new tests cover species-name normalization, invalid names, known base capacities and boundary validation. Earlier storage tests cover malformed JSON, empty/oversized payloads, duplicate UUIDs and capacity limits. These results validate compilation and automated rule tests only; in-game behavior, multiplayer persistence, and Cobblemon entity handling still require manual testing. Back up worlds before testing experimental builds.
+GitHub Actions runs 64–72 completed successfully. Run 72 (`Refresh CI status and document verified Cobblemon API research`) passed, including compilation, JUnit tests and packaging. The new tests cover species-name normalization, invalid names, known base capacities and boundary validation. Earlier storage tests cover malformed JSON, empty/oversized payloads, duplicate UUIDs and capacity limits. These results validate compilation and automated rule tests only; in-game behavior, multiplayer persistence, and Cobblemon entity handling still require manual testing. Back up worlds before testing experimental builds.
