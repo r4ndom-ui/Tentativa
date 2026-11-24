@@ -34,7 +34,11 @@ public final class CTBSCommands {
                                 ServerPlayerEntity player = requirePlayer(context.getSource());
                                 if (player == null) return 0;
                                 String species = StringArgumentType.getString(context, "species");
-                                CTBSPlayerState.resetCapacity(player.getUuid(), species);
+                                boolean saved = CTBSPlayerState.resetCapacity(player.getUuid(), species);
+                                if (!saved) {
+                                    context.getSource().sendError(Text.literal("Could not save CTBS settings. Your previous value was restored."));
+                                    return 0;
+                                }
                                 int base = CTBSPlayerState.getBaseCapacity(species);
                                 context.getSource().sendFeedback(() -> Text.literal("Reset " + species + " capacity to base value: " + base), false);
                                 return 1;
@@ -47,7 +51,11 @@ public final class CTBSCommands {
                                     if (player == null) return 0;
                                     String species = StringArgumentType.getString(context, "species");
                                     int value = IntegerArgumentType.getInteger(context, "value");
-                                    CTBSPlayerState.setCapacity(player.getUuid(), species, value);
+                                    boolean saved = CTBSPlayerState.setCapacity(player.getUuid(), species, value);
+                                    if (!saved) {
+                                        context.getSource().sendError(Text.literal("Could not save CTBS settings. Your previous value was restored."));
+                                        return 0;
+                                    }
                                     context.getSource().sendFeedback(() -> Text.literal("Saved " + species + " capacity: " + value), false);
                                     return 1;
                                 })))))
@@ -77,7 +85,10 @@ public final class CTBSCommands {
     private static int setMode(ServerCommandSource source, CTBSPlayerState.StomachMode mode) {
         ServerPlayerEntity player = requirePlayer(source);
         if (player == null) return 0;
-        CTBSPlayerState.setMode(player.getUuid(), mode);
+        if (!CTBSPlayerState.setMode(player.getUuid(), mode)) {
+            source.sendError(Text.literal("Could not save CTBS settings. Your previous value was restored."));
+            return 0;
+        }
         source.sendFeedback(() -> Text.literal("Stomach mode saved: " + mode), false);
         return 1;
     }
@@ -85,7 +96,10 @@ public final class CTBSCommands {
     private static int setPosture(ServerCommandSource source, CTBSPlayerState.Posture posture) {
         ServerPlayerEntity player = requirePlayer(source);
         if (player == null) return 0;
-        CTBSPlayerState.setPosture(player.getUuid(), posture);
+        if (!CTBSPlayerState.setPosture(player.getUuid(), posture)) {
+            source.sendError(Text.literal("Could not save CTBS settings. Your previous value was restored."));
+            return 0;
+        }
         float multiplier = CTBSPlayerState.digestionMultiplier(posture);
         source.sendFeedback(() -> Text.literal("Posture saved: " + posture + " (digestion multiplier x" + multiplier + ")"), false);
         return 1;
