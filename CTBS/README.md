@@ -29,9 +29,9 @@ GitHub Actions installs Java 21 and Gradle 8.12, then runs `gradle build` from t
 - `/ctbs action stand|sit|lie|nap`
 
 ## Not implemented yet
-This alpha does not yet capture or store live entities/Pokémon, restore Cobblemon Pokémon data, run actual healing or digestion ticks, create reward drops, sync an entity stomach inventory, implement transformation support from Explorers of the Rift, or include belly/creature models and animations. The policy and posture settings are persistent selection/state only; their gameplay effects must still be connected.
+This alpha does not yet capture or store live entities/Pokémon, restore Cobblemon Pokémon data, run actual healing or digestion ticks, create reward drops, sync an entity stomach inventory, implement transformation support from Explorers of the Rift, or include belly/creature models and animations. These are explicitly unimplemented gameplay features, not hidden behind the current menu commands. The next implementation milestone must first add Cobblemon API-backed entity serialization and server-authoritative storage, then add safe release/rollback paths before enabling any digestion or reward behavior. The policy and posture settings are persistent selection/state only; their gameplay effects must still be connected.
 
 The Cobblemon dependency is currently used for compile/runtime compatibility metadata; no Cobblemon-specific API calls are implemented yet.
 
 ## Test status
-GitHub Actions run 39 completed successfully after removing duplicate capacity helper declarations. Its `ctbs-build` artifact was uploaded (artifact ID 14940079053). This validates compilation and packaging only; in-game behavior, multiplayer persistence, and Cobblemon entity handling still need manual testing. Back up worlds before testing experimental builds.
+GitHub Actions run 40 completed successfully. Its `ctbs-build` artifact was uploaded (artifact ID 14940374147, 30,607 bytes). Run 39 also passed after removing duplicate capacity helper declarations. This validates compilation and packaging only; in-game behavior, multiplayer persistence, and Cobblemon entity handling still need manual testing. Back up worlds before testing experimental builds.
