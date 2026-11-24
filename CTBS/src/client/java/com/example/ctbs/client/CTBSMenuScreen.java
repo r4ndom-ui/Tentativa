@@ -132,7 +132,7 @@ public final class CTBSMenuScreen extends Screen {
         }
 
         void setCapacity(int capacity) {
-            setValue(Math.max(0, Math.min(100000, capacity)) / 100000.0);
+            this.value = Math.max(0, Math.min(100000, capacity)) / 100000.0;
             updateMessage();
         }
 
