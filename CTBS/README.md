@@ -9,7 +9,7 @@ GitHub Actions installs Java 21 and Gradle 8.12, then runs `gradle build` from t
 - Fabric Loom build with split main/client source sets.
 - Cobblemon 1.8.4 compile dependency; runtime metadata accepts Cobblemon >=1.8.0 and <1.9.0.
 - Persistent per-player configuration stored in `config/ctbs-player-state.json`.
-- Per-species capacity overrides with a free numeric command value (0–100000).
+- Per-species capacity overrides editable in the in-game menu with a synchronized slider and exact numeric field (0–100000), plus a one-click reset to the species default.
 - Conservative default capacities: Eevee 2, Gengar 7, Zoroark 5, Greninja 4, Scolipede/Snorlax 15, other species 3; Lucario uses the generic default unless customized.
 - Persistent stomach policy selection: HOLD, HEAL, DIGEST.
 - Persistent posture selection: STAND, SIT, LIE, NAP.
@@ -22,7 +22,8 @@ GitHub Actions installs Java 21 and Gradle 8.12, then runs `gradle build` from t
 
 ## Commands
 - `/ctbs capacity get <species>`
-- `/ctbs capacity set <species> <number>`\n- `/ctbs capacity reset <species>` (removes the personal override and restores the species base value)
+- `/ctbs capacity set <species> <number>`
+- `/ctbs capacity reset <species>` (removes the personal override and restores the species base value)
 - `/ctbs stomach status`
 - `/ctbs stomach mode hold|heal|digest`
 - `/ctbs action stand|sit|lie|nap`
