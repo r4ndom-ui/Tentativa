@@ -22,6 +22,7 @@ public final class CTBSPlayerState {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("ctbs-player-state.json");
+    private static final Path BACKUP = FILE.resolveSibling(FILE.getFileName() + ".bak");
     private static final Map<UUID, PlayerData> PLAYERS = new HashMap<>();
 
     private CTBSPlayerState() {}
@@ -29,26 +30,45 @@ public final class CTBSPlayerState {
     public static synchronized void load() {
         try {
             Files.createDirectories(FILE.getParent());
-            if (!Files.exists(FILE)) return;
-            try (Reader reader = Files.newBufferedReader(FILE)) {
-                Root root = GSON.fromJson(reader, Root.class);
-                PLAYERS.clear();
-                if (root != null && root.players != null) {
-                    root.players.forEach((key, value) -> {
-                        try {
-                            UUID id = UUID.fromString(key);
-                            PlayerData data = value == null ? new PlayerData() : value;
-                            data.sanitize();
-                            PLAYERS.put(id, data);
-                        } catch (IllegalArgumentException exception) {
-                            CTBSMod.LOGGER.warn("Ignoring invalid player UUID in CTBS state: {}", key);
-                        }
-                    });
+            if (Files.exists(FILE)) {
+                try {
+                    readState(FILE);
+                    return;
+                } catch (Exception primaryFailure) {
+                    CTBSMod.LOGGER.error("Primary CTBS state file is unreadable; trying backup", primaryFailure);
                 }
             }
+            if (Files.exists(BACKUP)) {
+                readState(BACKUP);
+                Files.copy(BACKUP, FILE, StandardCopyOption.REPLACE_EXISTING);
+                CTBSMod.LOGGER.warn("Recovered CTBS player state from backup file");
+            }
         } catch (Exception exception) {
-            CTBSMod.LOGGER.error("Could not load CTBS player state", exception);
+            CTBSMod.LOGGER.error("Could not load CTBS player state or its backup", exception);
         }
+    }
+
+    private static void readState(Path source) throws Exception {
+        Root root;
+        try (Reader reader = Files.newBufferedReader(source)) {
+            root = GSON.fromJson(reader, Root.class);
+        }
+        if (root == null || root.players == null) {
+            throw new IllegalStateException("CTBS state file has no player data root");
+        }
+        Map<UUID, PlayerData> loaded = new HashMap<>();
+        root.players.forEach((key, value) -> {
+            try {
+                UUID id = UUID.fromString(key);
+                PlayerData data = value == null ? new PlayerData() : value;
+                data.sanitize();
+                loaded.put(id, data);
+            } catch (IllegalArgumentException exception) {
+                CTBSMod.LOGGER.warn("Ignoring invalid player UUID in CTBS state: {}", key);
+            }
+        });
+        PLAYERS.clear();
+        PLAYERS.putAll(loaded);
     }
 
     private static synchronized void save() {
@@ -59,6 +79,15 @@ public final class CTBSPlayerState {
             Path temporary = FILE.resolveSibling(FILE.getFileName() + ".tmp");
             try (Writer writer = Files.newBufferedWriter(temporary)) {
                 GSON.toJson(root, writer);
+            }
+            if (Files.exists(FILE)) {
+                Path backupTemporary = BACKUP.resolveSibling(BACKUP.getFileName() + ".tmp");
+                Files.copy(FILE, backupTemporary, StandardCopyOption.REPLACE_EXISTING);
+                try {
+                    Files.move(backupTemporary, BACKUP, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+                } catch (AtomicMoveNotSupportedException ignored) {
+                    Files.move(backupTemporary, BACKUP, StandardCopyOption.REPLACE_EXISTING);
+                }
             }
             try {
                 Files.move(temporary, FILE, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
