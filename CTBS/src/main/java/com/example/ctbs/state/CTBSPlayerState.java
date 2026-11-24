@@ -72,7 +72,7 @@ public final class CTBSPlayerState {
         PLAYERS.putAll(loaded);
     }
 
-    private static synchronized void save() {
+    private static synchronized boolean save() {
         try {
             Files.createDirectories(FILE.getParent());
             Root root = new Root();
@@ -95,8 +95,10 @@ public final class CTBSPlayerState {
             } catch (AtomicMoveNotSupportedException ignored) {
                 Files.move(temporary, FILE, StandardCopyOption.REPLACE_EXISTING);
             }
+            return true;
         } catch (Exception exception) {
             CTBSMod.LOGGER.error("Could not save CTBS player state", exception);
+            return false;
         }
     }
 
@@ -141,7 +143,10 @@ public final class CTBSPlayerState {
         if (!CTBSPokemonStorageRules.canStore(data.storedPokemon, pokemonId, serializedPokemon, capacity)) return false;
         String key = pokemonId.toString();
         data.storedPokemon.put(key, serializedPokemon);
-        save();
+        if (!save()) {
+            data.storedPokemon.remove(key);
+            return false;
+        }
         return true;
     }
 
@@ -156,8 +161,13 @@ public final class CTBSPlayerState {
     public static synchronized boolean removeStoredPokemon(UUID playerId, UUID pokemonId) {
         PlayerData data = PLAYERS.get(playerId);
         if (data == null || pokemonId == null) return false;
-        if (data.storedPokemon.remove(pokemonId.toString()) == null) return false;
-        save();
+        String key = pokemonId.toString();
+        String previous = data.storedPokemon.remove(key);
+        if (previous == null) return false;
+        if (!save()) {
+            data.storedPokemon.put(key, previous);
+            return false;
+        }
         return true;
     }
 
