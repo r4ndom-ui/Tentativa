@@ -23,10 +23,23 @@ public final class CTBSCommands {
                                 if (player == null) return 0;
                                 String species = StringArgumentType.getString(context, "species");
                                 int value = CTBSPlayerState.getCapacity(player.getUuid(), species);
-                                context.getSource().sendFeedback(() -> Text.literal(species + " base/current capacity: " + value), false);
+                                int base = CTBSPlayerState.getBaseCapacity(species);
+                                boolean custom = CTBSPlayerState.hasCapacityOverride(player.getUuid(), species);
+                                context.getSource().sendFeedback(() -> Text.literal(species + " capacity: " + value + " (base: " + base + ", " + (custom ? "custom" : "default") + ")"), false);
                                 return 1;
                             })))
-                    .then(CommandManager.literal("reset")\n                        .then(CommandManager.argument("species", StringArgumentType.word())\n                            .executes(context -> {\n                                ServerPlayerEntity player = requirePlayer(context.getSource());\n                                if (player == null) return 0;\n                                String species = StringArgumentType.getString(context, "species");\n                                CTBSPlayerState.resetCapacity(player.getUuid(), species);\n                                int base = CTBSPlayerState.getBaseCapacity(species);\n                                context.getSource().sendFeedback(() -> Text.literal("Reset " + species + " capacity to base value: " + base), false);\n                                return 1;\n                            })))\n                    .then(CommandManager.literal("set")
+                    .then(CommandManager.literal("reset")
+                        .then(CommandManager.argument("species", StringArgumentType.word())
+                            .executes(context -> {
+                                ServerPlayerEntity player = requirePlayer(context.getSource());
+                                if (player == null) return 0;
+                                String species = StringArgumentType.getString(context, "species");
+                                CTBSPlayerState.resetCapacity(player.getUuid(), species);
+                                int base = CTBSPlayerState.getBaseCapacity(species);
+                                context.getSource().sendFeedback(() -> Text.literal("Reset " + species + " capacity to base value: " + base), false);
+                                return 1;
+                            })))
+                    .then(CommandManager.literal("set")
                         .then(CommandManager.argument("species", StringArgumentType.word())
                             .then(CommandManager.argument("value", IntegerArgumentType.integer(0, 100000))
                                 .executes(context -> {
