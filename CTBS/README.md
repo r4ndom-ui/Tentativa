@@ -31,4 +31,4 @@ This alpha does not yet capture or store live entities/Pokémon, restore Cobblem
 The Cobblemon dependency is currently used for compile/runtime compatibility metadata; no Cobblemon-specific API calls are implemented yet.
 
 ## Test status
-The GitHub Actions build passed for the initial server-state and command milestones. The latest build including the client screen, split source sets and pinned Cobblemon dependency is being validated. A successful Gradle build does not replace in-game client/server testing. Back up worlds before testing experimental builds.
+The GitHub Actions build passed for the initial server-state and command milestones. The client screen and synchronized numeric/slider capacity control compile successfully in GitHub Actions run 26. The workflow artifact `ctbs-build` was produced; in-game behavior still needs manual testing. A successful Gradle build does not replace in-game client/server testing. Back up worlds before testing experimental builds.
