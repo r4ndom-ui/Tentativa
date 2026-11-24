@@ -21,7 +21,7 @@ public final class CTBSMenuScreen extends Screen {
     private TextFieldWidget speciesField;
     private TextFieldWidget capacityField;
     private CapacitySlider capacitySlider;
-    private boolean syncingCapacity;
+    private boolean syncingCapacity;\n    private String selectedSpecies = "eevee";
 
     public CTBSMenuScreen() {
         super(Text.translatable("screen.ctbs.title"));
@@ -61,7 +61,7 @@ public final class CTBSMenuScreen extends Screen {
 
     private void buildCreatureTab(int left, int top) {
         speciesField = addDrawableChild(new TextFieldWidget(textRenderer, left + 18, top + 100, 220, 20, Text.literal("Espécie")));
-        speciesField.setText("eevee");
+        speciesField.setText(selectedSpecies);
         speciesField.setMaxLength(48);
         capacityField = addDrawableChild(new TextFieldWidget(textRenderer, left + 258, top + 100, 92, 20, Text.literal("Capacidade")));
         capacityField.setText("2");
@@ -96,7 +96,7 @@ public final class CTBSMenuScreen extends Screen {
         addDrawableChild(ButtonWidget.builder(Text.literal("CONSULTAR ESTADO NO CHAT"), b -> send("ctbs stomach status"))
             .dimensions(left + 18, top + 112, 332, 22).build());
         addDrawableChild(ButtonWidget.builder(Text.literal("CONSULTAR CAPACIDADE DA ESPÉCIE"), b -> {
-            String species = speciesField == null ? "eevee" : speciesField.getText().trim().toLowerCase(Locale.ROOT);
+            String species = selectedSpecies;
             if (species.matches("[a-z0-9_]+")) send("ctbs capacity get " + species);
         }).dimensions(left + 18, top + 145, 332, 22).build());
     }
@@ -129,7 +129,7 @@ public final class CTBSMenuScreen extends Screen {
         send("ctbs capacity set " + species + " " + parsed);
     }
 
-    private void send(String command) {
+    private void resetCapacity() {\n        String species = speciesField.getText().trim().toLowerCase(Locale.ROOT);\n        if (!species.matches("[a-z0-9_]+")) return;\n        selectedSpecies = species;\n        send("ctbs capacity reset " + species);\n    }\n\n    private void send(String command) {
         if (client != null && client.player != null) client.player.networkHandler.sendChatCommand(command);
     }
 
