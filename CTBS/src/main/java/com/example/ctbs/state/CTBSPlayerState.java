@@ -143,12 +143,7 @@ public final class CTBSPlayerState {
     }
 
     public static float digestionMultiplier(Posture posture) {
-        return switch (posture) {
-            case SIT -> 1.2f;
-            case LIE -> 1.4f;
-            case NAP -> 1.6f;
-            default -> 1.0f;
-        };
+        return CTBSGameplayRules.postureMultiplier(posture);
     }
 
     private static String normalize(String species) {
