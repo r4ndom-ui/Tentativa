@@ -9,6 +9,8 @@ class CTBSCapacityRulesTest {
     void normalizesSpeciesNamesConsistently() {
         assertEquals("eevee", CTBSCapacityRules.normalizeSpecies(" EeVeE "));
         assertEquals("mr_mime", CTBSCapacityRules.normalizeSpecies("Mr Mime"));
+        assertEquals("mr_mime", CTBSCapacityRules.normalizeSpecies("Mr   Mime"));
+        assertEquals("mr_mime", CTBSCapacityRules.normalizeSpecies("Mr\\tMime"));
     }
 
     @Test
