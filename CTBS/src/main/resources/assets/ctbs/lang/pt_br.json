@@ -1,0 +1,14 @@
+{
+  "key.ctbs.open_menu": "Abrir menu do CTBS",
+  "category.ctbs": "CTBS",
+  "screen.ctbs.title": "CTBS - Configurações do estômago",
+  "screen.ctbs.save_capacity": "Salvar capacidade",
+  "screen.ctbs.capacity_hint": "Espécie e capacidade numérica personalizada",
+  "screen.ctbs.hold": "Segurar",
+  "screen.ctbs.heal": "Curar",
+  "screen.ctbs.digest": "Digerir",
+  "screen.ctbs.sit": "Sentar",
+  "screen.ctbs.lie": "Deitar",
+  "screen.ctbs.nap": "Cochilar",
+  "screen.ctbs.close": "Fechar"
+}
