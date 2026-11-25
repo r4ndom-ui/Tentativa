@@ -11,7 +11,7 @@ public final class CTBSCapacityRules {
 
     public static String normalizeSpecies(String species) {
         if (species == null) throw new IllegalArgumentException("Species cannot be null");
-        String normalized = species.trim().toLowerCase(Locale.ROOT).replaceAll("\\s+", "_");
+        String normalized = species.trim().toLowerCase(Locale.ROOT).replaceAll("[\\t\\n\\x0B\\f\\r ]+", "_");
         if (normalized.isEmpty()) throw new IllegalArgumentException("Species cannot be blank");
         return normalized;
     }
