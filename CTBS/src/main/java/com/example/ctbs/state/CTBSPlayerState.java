@@ -171,6 +171,7 @@ public final class CTBSPlayerState {
     }
 
     public static synchronized Map<String, String> getStoredPokemon(UUID playerId) {
+        if (playerId == null) return Collections.emptyMap();
         PlayerData data = PLAYERS.get(playerId);
         if (data == null) return Collections.emptyMap();
         data.sanitize();
@@ -179,6 +180,7 @@ public final class CTBSPlayerState {
 
     /** Removes a stored record only after the caller has successfully restored the Pokémon entity. */
     public static synchronized boolean removeStoredPokemon(UUID playerId, UUID pokemonId) {
+        if (playerId == null || pokemonId == null) return false;
         PlayerData data = PLAYERS.get(playerId);
         if (data == null || pokemonId == null) return false;
         String key = pokemonId.toString();
