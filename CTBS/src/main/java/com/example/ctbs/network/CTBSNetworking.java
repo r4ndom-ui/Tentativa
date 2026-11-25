@@ -1,6 +1,7 @@
 package com.example.ctbs.network;
 
 import com.example.ctbs.state.CTBSPlayerState;
+import com.example.ctbs.state.CTBSPokemonStorageRules;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -43,9 +44,14 @@ public final class CTBSNetworking {
     }
 
     private static void sendIfChanged(ServerPlayerEntity player, boolean force) {
-        String ids = CTBSPlayerState.getStoredPokemon(player.getUuid()).keySet().stream()
-            .sorted()
+        String ids = CTBSPlayerState.getStoredPokemon(player.getUuid()).entrySet().stream()
+            .sorted(Map.Entry.comparingByKey())
             .limit(200)
+            .map(entry -> {
+                String species = CTBSPokemonStorageRules.displaySpecies(entry.getValue());
+                int level = CTBSPokemonStorageRules.displayLevel(entry.getValue());
+                return entry.getKey() + "|" + (species.isEmpty() ? "unknown" : species) + "|" + level;
+            })
             .collect(Collectors.joining("\n"));
         if (ids.length() > 32000) ids = ids.substring(0, 32000);
         if (force || !ids.equals(LAST_SENT.get(player.getUuid()))) {
