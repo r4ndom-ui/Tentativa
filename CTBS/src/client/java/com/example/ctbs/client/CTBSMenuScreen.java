@@ -17,7 +17,10 @@ public final class CTBSMenuScreen extends Screen {
     private static final int MUTED = 0xFFADB5C4;
 
     private enum Tab { CREATURE, STOMACH, ACTIONS, STATUS }
+    private enum ContentTab { MOBS, ITEMS }
     private Tab selected = Tab.CREATURE;
+    private ContentTab contentTab = ContentTab.MOBS;
+    private boolean contentsOpen;
     private TextFieldWidget speciesField;
     private TextFieldWidget capacityField;
     private CapacitySlider capacitySlider;
@@ -38,16 +41,32 @@ public final class CTBSMenuScreen extends Screen {
         int left = width / 2 - 190;
         int top = Math.max(18, height / 2 - 135);
 
-        addTab(left + 14, top + 40, "CRIATURA", Tab.CREATURE);
-        addTab(left + 108, top + 40, "ESTÔMAGO", Tab.STOMACH);
-        addTab(left + 202, top + 40, "AÇÕES", Tab.ACTIONS);
-        addTab(left + 296, top + 40, "ESTADO", Tab.STATUS);
+        if (contentsOpen) {
+            addDrawableChild(ButtonWidget.builder(Text.literal("‹ VOLTAR"), b -> {
+                contentsOpen = false;
+                rebuild();
+            }).dimensions(left + 14, top + 40, 86, 20).build());
+            addDrawableChild(ButtonWidget.builder(Text.literal((contentTab == ContentTab.MOBS ? "◆ " : "") + "MOBS"), b -> {
+                contentTab = ContentTab.MOBS;
+                rebuild();
+            }).dimensions(left + 108, top + 40, 110, 20).build());
+            addDrawableChild(ButtonWidget.builder(Text.literal((contentTab == ContentTab.ITEMS ? "◆ " : "") + "ITENS"), b -> {
+                contentTab = ContentTab.ITEMS;
+                rebuild();
+            }).dimensions(left + 226, top + 40, 124, 20).build());
+            buildContentsTab(left, top);
+        } else {
+            addTab(left + 14, top + 40, "CRIATURA", Tab.CREATURE);
+            addTab(left + 108, top + 40, "ESTÔMAGO", Tab.STOMACH);
+            addTab(left + 202, top + 40, "AÇÕES", Tab.ACTIONS);
+            addTab(left + 296, top + 40, "ESTADO", Tab.STATUS);
 
-        switch (selected) {
-            case CREATURE -> buildCreatureTab(left, top);
-            case STOMACH -> buildStomachTab(left, top);
-            case ACTIONS -> buildActionsTab(left, top);
-            case STATUS -> buildStatusTab(left, top);
+            switch (selected) {
+                case CREATURE -> buildCreatureTab(left, top);
+                case STOMACH -> buildStomachTab(left, top);
+                case ACTIONS -> buildActionsTab(left, top);
+                case STATUS -> buildStatusTab(left, top);
+            }
         }
         addDrawableChild(ButtonWidget.builder(Text.literal("FECHAR"), b -> close())
             .dimensions(left + 14, top + 235, 356, 20).build());
@@ -77,12 +96,22 @@ public final class CTBSMenuScreen extends Screen {
     }
 
     private void buildStomachTab(int left, int top) {
+        addDrawableChild(ButtonWidget.builder(Text.literal("VER CONTEÚDO DO ESTÔMAGO"), b -> {
+            contentsOpen = true;
+            contentTab = ContentTab.MOBS;
+            rebuild();
+        }).dimensions(left + 18, top + 105, 332, 24).build());
         addDrawableChild(ButtonWidget.builder(Text.literal("RETER CONTEÚDO"), b -> send("ctbs stomach mode hold"))
-            .dimensions(left + 18, top + 105, 332, 22).build());
-        addDrawableChild(ButtonWidget.builder(Text.literal("MODO DE CURA"), b -> send("ctbs stomach mode heal"))
             .dimensions(left + 18, top + 137, 332, 22).build());
+        addDrawableChild(ButtonWidget.builder(Text.literal("MODO DE CURA"), b -> send("ctbs stomach mode heal"))
+            .dimensions(left + 18, top + 165, 158, 22).build());
         addDrawableChild(ButtonWidget.builder(Text.literal("DIGESTÃO"), b -> send("ctbs stomach mode digest"))
-            .dimensions(left + 18, top + 169, 332, 22).build());
+            .dimensions(left + 192, top + 165, 158, 22).build());
+    }
+
+    private void buildContentsTab(int left, int top) {
+        // The server-authoritative storage ledger is not synchronized to the client yet.
+        // Keep this screen honest instead of displaying fabricated Pokémon or item entries.
     }
 
     private void buildActionsTab(int left, int top) {
@@ -160,8 +189,20 @@ public final class CTBSMenuScreen extends Screen {
             context.drawTextWithShadow(textRenderer, Text.literal("Espécie"), left + 18, top + 89, MUTED);
             context.drawTextWithShadow(textRenderer, Text.literal("Valor exato"), left + 258, top + 89, MUTED);
             context.drawTextWithShadow(textRenderer, Text.literal("Arraste o controle ou digite qualquer valor entre 0 e 100000."), left + 18, top + 164, MUTED);
+        } else if (contentsOpen) {
+            context.drawTextWithShadow(textRenderer,
+                Text.literal(contentTab == ContentTab.MOBS ? "POKÉMON ARMAZENADOS" : "ITENS ARMAZENADOS"),
+                left + 18, top + 75, ACCENT);
+            context.fill(left + 18, top + 94, left + 362, top + 214, PANEL_INNER);
+            context.drawBorder(left + 18, top + 94, 344, 120, BORDER);
+            context.drawCenteredTextWithShadow(textRenderer,
+                Text.literal(contentTab == ContentTab.MOBS ? "Aguardando sincronização dos Pokémon" : "O armazenamento de itens ainda não foi conectado"),
+                width / 2, top + 139, 0xFFF1E6D2);
+            context.drawCenteredTextWithShadow(textRenderer,
+                Text.literal(contentTab == ContentTab.MOBS ? "Os registros existem no servidor, mas ainda não chegam à interface." : "Esta aba já está preparada visualmente para a lista de itens."),
+                width / 2, top + 156, MUTED);
         } else if (selected == Tab.STOMACH) {
-            context.drawTextWithShadow(textRenderer, Text.literal("Escolha como o conteúdo armazenado será tratado."), left + 18, top + 88, MUTED);
+            context.drawTextWithShadow(textRenderer, Text.literal("Abra a lista de conteúdos ou escolha um modo."), left + 18, top + 88, MUTED);
         } else if (selected == Tab.ACTIONS) {
             context.drawTextWithShadow(textRenderer, Text.literal("Posturas: normal, sentado, deitado e cochilando."), left + 18, top + 88, MUTED);
             context.drawTextWithShadow(textRenderer, Text.literal("Bônus previstos: 0%, 20%, 40% e 60%."), left + 18, top + 177, MUTED);
