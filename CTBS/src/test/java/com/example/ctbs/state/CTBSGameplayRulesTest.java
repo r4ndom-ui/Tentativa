@@ -6,6 +6,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CTBSGameplayRulesTest {
     @Test
+    void digestionSaturationScalesWithTotalMaximumHealth() {
+        assertEquals(5.0f, CTBSGameplayRules.digestionSaturation(10.0f), 0.0001f);
+        assertEquals(10.0f, CTBSGameplayRules.digestionSaturation(20.0f), 0.0001f);
+    }
+
+    @Test
+    void digestionSaturationNeverExceedsVanillaMaximum() {
+        assertEquals(20.0f, CTBSGameplayRules.digestionSaturation(100.0f), 0.0001f);
+    }
+
+    @Test
+    void invalidMaximumHealthGrantsNoSaturation() {
+        assertEquals(0.0f, CTBSGameplayRules.digestionSaturation(0.0f));
+        assertEquals(0.0f, CTBSGameplayRules.digestionSaturation(-5.0f));
+        assertEquals(0.0f, CTBSGameplayRules.digestionSaturation(Float.NaN));
+        assertEquals(0.0f, CTBSGameplayRules.digestionSaturation(Float.POSITIVE_INFINITY));
+    }
+
+    @Test
     void standingUsesBaseMultiplier() {
         assertEquals(1.0f, CTBSGameplayRules.postureMultiplier(CTBSPlayerState.Posture.STAND));
     }
