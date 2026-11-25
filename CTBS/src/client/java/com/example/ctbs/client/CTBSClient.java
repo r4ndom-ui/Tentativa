@@ -12,15 +12,27 @@ import org.lwjgl.glfw.GLFW;
 
 public final class CTBSClient implements ClientModInitializer {
     private static KeyBinding openMenu;
-    private static volatile List<String> storedPokemonIds = List.of();
+    public record StoredPokemon(String id, String species, int level) {}
+    private static volatile List<StoredPokemon> storedPokemon = List.of();
 
-    public static List<String> getStoredPokemonIds() { return storedPokemonIds; }
+    public static List<StoredPokemon> getStoredPokemon() { return storedPokemon; }
 
     @Override
     public void onInitializeClient() {
         ClientPlayNetworking.registerGlobalReceiver(StomachContentsPayload.ID, (payload, context) -> {
             String value = payload.recordIds();
-            storedPokemonIds = value.isBlank() ? List.of() : value.lines().filter(line -> !line.isBlank()).limit(200).toList();
+            storedPokemon = value.isBlank() ? List.of() : value.lines()
+                .filter(line -> !line.isBlank())
+                .limit(200)
+                .map(line -> {
+                    String[] parts = line.split("\\|", 3);
+                    if (parts.length != 3) return null;
+                    int level;
+                    try { level = Integer.parseInt(parts[2]); } catch (NumberFormatException ignored) { level = -1; }
+                    return new StoredPokemon(parts[0], parts[1], level);
+                })
+                .filter(java.util.Objects::nonNull)
+                .toList();
         });
         openMenu = KeyBindingHelper.registerKeyBinding(new KeyBinding(
             "key.ctbs.open_menu", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_O, "category.ctbs"
