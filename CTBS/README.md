@@ -15,6 +15,7 @@ GitHub Actions installs Java 21 and Gradle 8.12, then runs `gradle build` from t
 - Persistent stomach policy selection: HOLD, HEAL, DIGEST. Settings now roll back in memory if disk persistence fails, and commands report save failures instead of claiming success.
 - Persistent posture selection: STAND, SIT, LIE, NAP.
 - Posture multiplier values exposed to future gameplay systems: 1.0x, 1.2x, 1.4x and 1.6x.
+- Pure digestion reward rule: 0.5 saturation points per point of creature maximum health, capped at Minecraft's 20-point saturation limit; invalid health values grant no reward. This calculation is covered by unit tests but is not yet connected to a live digestion event.
 - Client keybinding (O by default), configurable in Minecraft Controls, and a dark-fantasy multi-tab screen: Creature, Stomach, Actions and Status.
 - Stomach and posture tabs issue the existing server commands; Status displays current mode, posture and multiplier in chat.
 - Creature tab supports exact numeric capacity entry synchronized with a slider.
