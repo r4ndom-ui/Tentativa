@@ -72,4 +72,19 @@ class CTBSPokemonStorageRulesTest {
         assertFalse(CTBSPokemonStorageRules.canStore(new HashMap<>(), UUID.randomUUID(), "{}", -1));
         assertFalse(CTBSPokemonStorageRules.canStore(new HashMap<>(), UUID.randomUUID(), "{}", 100001));
     }
+    @Test
+    void extractsSupportedSpeciesAndLevelFields() {
+        String payload = "{\"species\":\"cobblemon:eevee\",\"level\":25}";
+        assertEquals("cobblemon:eevee", CTBSPokemonStorageRules.displaySpecies(payload));
+        assertEquals(25, CTBSPokemonStorageRules.displayLevel(payload));
+    }
+
+    @Test
+    void safelyFallsBackWhenDisplayFieldsAreMissingOrInvalid() {
+        assertEquals("", CTBSPokemonStorageRules.displaySpecies("{}"));
+        assertEquals(-1, CTBSPokemonStorageRules.displayLevel("{}"));
+        assertEquals("", CTBSPokemonStorageRules.displaySpecies("{\"species\":{\"id\":\"eevee\"}}"));
+        assertEquals(-1, CTBSPokemonStorageRules.displayLevel("{\"level\":999}"));
+    }
+
 }
