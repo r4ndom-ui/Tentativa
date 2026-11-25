@@ -23,6 +23,7 @@ public final class CTBSMenuScreen extends Screen {
     private Tab selected = Tab.CREATURE;
     private ContentTab contentTab = ContentTab.MOBS;
     private boolean contentsOpen;
+    private int mobsPage;
     private TextFieldWidget speciesField;
     private TextFieldWidget capacityField;
     private CapacitySlider capacitySlider;
@@ -50,6 +51,7 @@ public final class CTBSMenuScreen extends Screen {
             }).dimensions(left + 14, top + 40, 86, 20).build());
             addDrawableChild(ButtonWidget.builder(Text.literal((contentTab == ContentTab.MOBS ? "◆ " : "") + "MOBS"), b -> {
                 contentTab = ContentTab.MOBS;
+                mobsPage = 0;
                 rebuild();
             }).dimensions(left + 108, top + 40, 110, 20).build());
             addDrawableChild(ButtonWidget.builder(Text.literal((contentTab == ContentTab.ITEMS ? "◆ " : "") + "ITENS"), b -> {
@@ -112,8 +114,18 @@ public final class CTBSMenuScreen extends Screen {
     }
 
     private void buildContentsTab(int left, int top) {
-        // The server-authoritative storage ledger is not synchronized to the client yet.
-        // Keep this screen honest instead of displaying fabricated Pokémon or item entries.
+        if (contentTab != ContentTab.MOBS) return;
+        List<String> ids = CTBSClient.getStoredPokemonIds();
+        int pages = Math.max(1, (ids.size() + 6) / 7);
+        mobsPage = Math.max(0, Math.min(mobsPage, pages - 1));
+        addDrawableChild(ButtonWidget.builder(Text.literal("‹ ANTERIOR"), b -> {
+            mobsPage = Math.max(0, mobsPage - 1);
+            rebuild();
+        }).dimensions(left + 24, top + 215, 150, 18).build());
+        addDrawableChild(ButtonWidget.builder(Text.literal("PRÓXIMA ›"), b -> {
+            mobsPage = Math.min(pages - 1, mobsPage + 1);
+            rebuild();
+        }).dimensions(left + 196, top + 215, 160, 18).build());
     }
 
     private void buildActionsTab(int left, int top) {
@@ -201,18 +213,20 @@ public final class CTBSMenuScreen extends Screen {
                 List<String> ids = CTBSClient.getStoredPokemonIds();
                 if (ids.isEmpty()) {
                     context.drawCenteredTextWithShadow(textRenderer, Text.literal("Nenhum Pokémon armazenado."), width / 2, top + 139, 0xFFF1E6D2);
-                    context.drawCenteredTextWithShadow(textRenderer, Text.literal("A lista é sincronizada pelo servidor ao entrar no mundo."), width / 2, top + 156, MUTED);
+                    context.drawCenteredTextWithShadow(textRenderer, Text.literal("A lista é atualizada automaticamente pelo servidor."), width / 2, top + 156, MUTED);
                 } else {
-                    int visible = Math.min(ids.size(), 7);
+                    int pages = Math.max(1, (ids.size() + 6) / 7);
+                    int start = mobsPage * 7;
+                    int visible = Math.min(7, ids.size() - start);
                     for (int i = 0; i < visible; i++) {
-                        String id = ids.get(i);
+                        String id = ids.get(start + i);
                         context.fill(left + 24, top + 100 + i * 15, left + 356, top + 113 + i * 15, i % 2 == 0 ? 0xFF293244 : PANEL_INNER);
                         context.drawTextWithShadow(textRenderer, Text.literal("Registro " + (i + 1)), left + 29, top + 102 + i * 15, ACCENT);
                         context.drawTextWithShadow(textRenderer, Text.literal(id), left + 112, top + 102 + i * 15, 0xFFE8EAF0);
                     }
-                    if (ids.size() > visible) {
-                        context.drawTextWithShadow(textRenderer, Text.literal("+" + (ids.size() - visible) + " registros (máx. 200 sincronizados)"), left + 24, top + 207, MUTED);
-                    }
+                    context.drawTextWithShadow(textRenderer,
+                        Text.literal("Página " + (mobsPage + 1) + " / " + pages + "  •  " + ids.size() + " registros"),
+                        left + 24, top + 207, MUTED);
                 }
             } else {
                 context.drawCenteredTextWithShadow(textRenderer, Text.literal("Armazenamento de itens ainda não implementado."), width / 2, top + 139, 0xFFF1E6D2);
