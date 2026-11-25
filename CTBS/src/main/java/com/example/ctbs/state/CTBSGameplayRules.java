@@ -5,6 +5,7 @@ public final class CTBSGameplayRules {
     private CTBSGameplayRules() {}
 
     public static float postureMultiplier(CTBSPlayerState.Posture posture) {
+        if (posture == null) throw new IllegalArgumentException("Posture cannot be null");
         return switch (posture) {
             case SIT -> 1.2f;
             case LIE -> 1.4f;
