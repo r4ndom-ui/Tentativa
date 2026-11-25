@@ -1,6 +1,7 @@
 package com.example.ctbs;
 
 import com.example.ctbs.command.CTBSCommands;
+import com.example.ctbs.network.CTBSNetworking;
 import com.example.ctbs.state.CTBSPlayerState;
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ public final class CTBSMod implements ModInitializer {
     public void onInitialize() {
         CTBSPlayerState.load();
         CTBSCommands.register();
+        CTBSNetworking.register();
         LOGGER.info("CTBS persistent player settings initialized.");
     }
 }
