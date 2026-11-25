@@ -43,6 +43,18 @@ class CTBSPokemonStorageRulesTest {
     }
 
     @Test
+    void acceptsNestedJsonPayloadWithUnicodeAndArrays() {
+        assertTrue(CTBSPokemonStorageRules.isValidPayload(
+            "{\"pokemon\":{\"species\":\"mr-mime\",\"nickname\":\"snowman ☃\"},\"stats\":[1,2,3]}"));
+    }
+
+    @Test
+    void rejectsTrailingGarbageAfterJsonObject() {
+        assertFalse(CTBSPokemonStorageRules.isValidPayload("{} trailing"));
+        assertFalse(CTBSPokemonStorageRules.isValidPayload("{} {}"));
+    }
+
+    @Test
     void rejectsNullArgumentsAndNullStorage() {
         assertFalse(CTBSPokemonStorageRules.canStore(null, UUID.randomUUID(), "{}", 3));
         assertFalse(CTBSPokemonStorageRules.canStore(new HashMap<>(), null, "{}", 3));
