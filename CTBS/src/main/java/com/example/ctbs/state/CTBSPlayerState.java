@@ -187,6 +187,7 @@ public final class CTBSPlayerState {
     }
 
     public static synchronized boolean setMode(UUID playerId, StomachMode mode) {
+        if (playerId == null || mode == null) return false;
         PlayerData data = PLAYERS.computeIfAbsent(playerId, ignored -> new PlayerData());
         String previous = data.mode;
         data.mode = mode.name();
@@ -198,6 +199,7 @@ public final class CTBSPlayerState {
     }
 
     public static synchronized boolean setPosture(UUID playerId, Posture posture) {
+        if (playerId == null || posture == null) return false;
         PlayerData data = PLAYERS.computeIfAbsent(playerId, ignored -> new PlayerData());
         String previous = data.posture;
         data.posture = posture.name();
