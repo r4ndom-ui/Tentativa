@@ -1,5 +1,7 @@
 package com.example.ctbs.client;
 
+import java.util.List;
+
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -195,12 +197,27 @@ public final class CTBSMenuScreen extends Screen {
                 left + 18, top + 75, ACCENT);
             context.fill(left + 18, top + 94, left + 362, top + 214, PANEL_INNER);
             context.drawBorder(left + 18, top + 94, 344, 120, BORDER);
-            context.drawCenteredTextWithShadow(textRenderer,
-                Text.literal(contentTab == ContentTab.MOBS ? "Aguardando sincronização dos Pokémon" : "O armazenamento de itens ainda não foi conectado"),
-                width / 2, top + 139, 0xFFF1E6D2);
-            context.drawCenteredTextWithShadow(textRenderer,
-                Text.literal(contentTab == ContentTab.MOBS ? "Os registros existem no servidor, mas ainda não chegam à interface." : "Esta aba já está preparada visualmente para a lista de itens."),
-                width / 2, top + 156, MUTED);
+            if (contentTab == ContentTab.MOBS) {
+                List<String> ids = CTBSClient.getStoredPokemonIds();
+                if (ids.isEmpty()) {
+                    context.drawCenteredTextWithShadow(textRenderer, Text.literal("Nenhum Pokémon armazenado."), width / 2, top + 139, 0xFFF1E6D2);
+                    context.drawCenteredTextWithShadow(textRenderer, Text.literal("A lista é sincronizada pelo servidor ao entrar no mundo."), width / 2, top + 156, MUTED);
+                } else {
+                    int visible = Math.min(ids.size(), 7);
+                    for (int i = 0; i < visible; i++) {
+                        String id = ids.get(i);
+                        context.fill(left + 24, top + 100 + i * 15, left + 356, top + 113 + i * 15, i % 2 == 0 ? 0xFF293244 : PANEL_INNER);
+                        context.drawTextWithShadow(textRenderer, Text.literal("Registro " + (i + 1)), left + 29, top + 102 + i * 15, ACCENT);
+                        context.drawTextWithShadow(textRenderer, Text.literal(id), left + 112, top + 102 + i * 15, 0xFFE8EAF0);
+                    }
+                    if (ids.size() > visible) {
+                        context.drawTextWithShadow(textRenderer, Text.literal("+" + (ids.size() - visible) + " registros (máx. 200 sincronizados)"), left + 24, top + 207, MUTED);
+                    }
+                }
+            } else {
+                context.drawCenteredTextWithShadow(textRenderer, Text.literal("Armazenamento de itens ainda não implementado."), width / 2, top + 139, 0xFFF1E6D2);
+                context.drawCenteredTextWithShadow(textRenderer, Text.literal("A aba será conectada quando o inventário persistente existir."), width / 2, top + 156, MUTED);
+            }
         } else if (selected == Tab.STOMACH) {
             context.drawTextWithShadow(textRenderer, Text.literal("Abra a lista de conteúdos ou escolha um modo."), left + 18, top + 88, MUTED);
         } else if (selected == Tab.ACTIONS) {
