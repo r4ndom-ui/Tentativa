@@ -115,7 +115,7 @@ public final class CTBSMenuScreen extends Screen {
 
     private void buildContentsTab(int left, int top) {
         if (contentTab != ContentTab.MOBS) return;
-        List<String> ids = CTBSClient.getStoredPokemonIds();
+        List<CTBSClient.StoredPokemon> ids = CTBSClient.getStoredPokemon();
         int pages = Math.max(1, (ids.size() + 6) / 7);
         mobsPage = Math.max(0, Math.min(mobsPage, pages - 1));
         addDrawableChild(ButtonWidget.builder(Text.literal("‹ ANTERIOR"), b -> {
@@ -219,10 +219,13 @@ public final class CTBSMenuScreen extends Screen {
                     int start = mobsPage * 7;
                     int visible = Math.min(7, ids.size() - start);
                     for (int i = 0; i < visible; i++) {
-                        String id = ids.get(start + i);
+                        CTBSClient.StoredPokemon pokemon = ids.get(start + i);
                         context.fill(left + 24, top + 100 + i * 15, left + 356, top + 113 + i * 15, i % 2 == 0 ? 0xFF293244 : PANEL_INNER);
-                        context.drawTextWithShadow(textRenderer, Text.literal("Registro " + (i + 1)), left + 29, top + 102 + i * 15, ACCENT);
-                        context.drawTextWithShadow(textRenderer, Text.literal(id), left + 112, top + 102 + i * 15, 0xFFE8EAF0);
+                        String species = pokemon.species().equals("unknown") ? "Espécie desconhecida" : pokemon.species();
+                        String level = pokemon.level() > 0 ? "Nv. " + pokemon.level() : "Nível indisponível";
+                        context.drawTextWithShadow(textRenderer, Text.literal(species), left + 29, top + 102 + i * 15, ACCENT);
+                        context.drawTextWithShadow(textRenderer, Text.literal(level), left + 175, top + 102 + i * 15, 0xFFE8EAF0);
+                        context.drawTextWithShadow(textRenderer, Text.literal(pokemon.id().substring(0, 8)), left + 270, top + 102 + i * 15, MUTED);
                     }
                     context.drawTextWithShadow(textRenderer,
                         Text.literal("Página " + (mobsPage + 1) + " / " + pages + "  •  " + ids.size() + " registros"),
