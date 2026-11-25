@@ -103,12 +103,14 @@ public final class CTBSPlayerState {
     }
 
     public static synchronized PlayerData get(UUID playerId) {
+        if (playerId == null) throw new IllegalArgumentException("Player UUID cannot be null");
         PlayerData data = PLAYERS.computeIfAbsent(playerId, ignored -> new PlayerData());
         data.sanitize();
         return data.copy();
     }
 
     public static synchronized int getCapacity(UUID playerId, String species) {
+        if (playerId == null) throw new IllegalArgumentException("Player UUID cannot be null");
         PlayerData data = PLAYERS.get(playerId);
         String key = normalize(species);
         if (data != null && data.capacityOverrides.containsKey(key)) return data.capacityOverrides.get(key);
@@ -116,11 +118,13 @@ public final class CTBSPlayerState {
     }
 
     public static synchronized boolean hasCapacityOverride(UUID playerId, String species) {
+        if (playerId == null) return false;
         PlayerData data = PLAYERS.get(playerId);
         return data != null && data.capacityOverrides.containsKey(normalize(species));
     }
 
     public static synchronized boolean resetCapacity(UUID playerId, String species) {
+        if (playerId == null) return false;
         PlayerData data = PLAYERS.get(playerId);
         if (data == null) return true;
         String key = normalize(species);
@@ -138,6 +142,7 @@ public final class CTBSPlayerState {
     }
 
     public static synchronized boolean setCapacity(UUID playerId, String species, int capacity) {
+        if (playerId == null) return false;
         CTBSCapacityRules.validateOverride(capacity);
         PlayerData data = PLAYERS.computeIfAbsent(playerId, ignored -> new PlayerData());
         String key = normalize(species);
