@@ -21,6 +21,12 @@ class CTBSGameplayRulesTest {
     }
 
     @Test
+    void rejectsNullPostureWithClearArgumentError() {
+        org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,
+            () -> CTBSGameplayRules.postureMultiplier(null));
+    }
+
+    @Test
     void nappingUsesSixtyPercentMultiplier() {
         assertEquals(1.6f, CTBSGameplayRules.postureMultiplier(CTBSPlayerState.Posture.NAP), 0.0001f);
     }
