@@ -73,6 +73,34 @@ public final class CTBSCommands {
                         .then(CommandManager.literal("hold").executes(c -> setMode(c.getSource(), CTBSPlayerState.StomachMode.HOLD)))
                         .then(CommandManager.literal("heal").executes(c -> setMode(c.getSource(), CTBSPlayerState.StomachMode.HEAL)))
                         .then(CommandManager.literal("digest").executes(c -> setMode(c.getSource(), CTBSPlayerState.StomachMode.DIGEST)))))
+                .then(CommandManager.literal("storage")
+                    .then(CommandManager.literal("status").executes(context -> {
+                        ServerPlayerEntity player = requirePlayer(context.getSource());
+                        if (player == null) return 0;
+                        int count = CTBSPlayerState.getStoredPokemon(player.getUuid()).size();
+                        context.getSource().sendFeedback(() -> Text.literal(
+                            "Stored Pokémon records: " + count), false);
+                        return 1;
+                    }))
+                    .then(CommandManager.literal("list").executes(context -> {
+                        ServerPlayerEntity player = requirePlayer(context.getSource());
+                        if (player == null) return 0;
+                        var ids = CTBSPlayerState.getStoredPokemon(player.getUuid()).keySet()
+                            .stream().sorted().toList();
+                        if (ids.isEmpty()) {
+                            context.getSource().sendFeedback(() -> Text.literal("No Pokémon records are stored."), false);
+                            return 1;
+                        }
+                        context.getSource().sendFeedback(() -> Text.literal(
+                            "Stored Pokémon UUIDs (" + ids.size() + "):"), false);
+                        ids.stream().limit(20).forEach(id ->
+                            context.getSource().sendFeedback(() -> Text.literal(id), false));
+                        if (ids.size() > 20) {
+                            context.getSource().sendFeedback(() -> Text.literal(
+                                "Showing first 20 of " + ids.size() + " records."), false);
+                        }
+                        return 1;
+                    })))
                 .then(CommandManager.literal("action")
                     .then(CommandManager.literal("stand").executes(c -> setPosture(c.getSource(), CTBSPlayerState.Posture.STAND)))
                     .then(CommandManager.literal("sit").executes(c -> setPosture(c.getSource(), CTBSPlayerState.Posture.SIT)))
