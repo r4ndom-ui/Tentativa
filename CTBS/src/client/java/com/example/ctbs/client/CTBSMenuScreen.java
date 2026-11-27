@@ -210,7 +210,7 @@ public final class CTBSMenuScreen extends Screen {
             context.fill(left + 18, top + 94, left + 362, top + 214, PANEL_INNER);
             context.drawBorder(left + 18, top + 94, 344, 120, BORDER);
             if (contentTab == ContentTab.MOBS) {
-                List<String> ids = CTBSClient.getStoredPokemonIds();
+                List<CTBSClient.StoredPokemon> ids = CTBSClient.getStoredPokemon();
                 if (ids.isEmpty()) {
                     context.drawCenteredTextWithShadow(textRenderer, Text.literal("Nenhum Pokémon armazenado."), width / 2, top + 139, 0xFFF1E6D2);
                     context.drawCenteredTextWithShadow(textRenderer, Text.literal("A lista é atualizada automaticamente pelo servidor."), width / 2, top + 156, MUTED);
