@@ -40,7 +40,8 @@ public final class CTBSPokemonStorageRules {
         try {
             JsonElement level = JsonParser.parseString(payload).getAsJsonObject().get("level");
             if (level == null || !level.isJsonPrimitive() || !level.getAsJsonPrimitive().isNumber()) return -1;
-            int value = level.getAsInt();
+            // Reject fractional and overflowing values instead of silently truncating them.
+            int value = level.getAsBigDecimal().intValueExact();
             return value >= 1 && value <= 100 ? value : -1;
         } catch (RuntimeException invalid) {
             return -1;
