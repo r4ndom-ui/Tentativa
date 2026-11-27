@@ -87,4 +87,13 @@ class CTBSPokemonStorageRulesTest {
         assertEquals(-1, CTBSPokemonStorageRules.displayLevel("{\"level\":999}"));
     }
 
+
+    @Test
+    void rejectsFractionalAndOutOfRangeDisplayLevels() {
+        assertEquals(-1, CTBSPokemonStorageRules.displayLevel("{\"level\":25.5}"));
+        assertEquals(-1, CTBSPokemonStorageRules.displayLevel("{\"level\":1e100}"));
+        assertEquals(-1, CTBSPokemonStorageRules.displayLevel("{\"level\":0}"));
+        assertEquals(100, CTBSPokemonStorageRules.displayLevel("{\"level\":100}"));
+    }
+
 }
