@@ -27,9 +27,20 @@ public final class CTBSClient implements ClientModInitializer {
                 .map(line -> {
                     String[] parts = line.split("\\|", 3);
                     if (parts.length != 3) return null;
+                    try {
+                        java.util.UUID.fromString(parts[0]);
+                    } catch (IllegalArgumentException invalidId) {
+                        return null;
+                    }
+                    String species = parts[1].matches("[a-zA-Z0-9_:.-]{1,64}") ? parts[1] : "unknown";
                     int level;
-                    try { level = Integer.parseInt(parts[2]); } catch (NumberFormatException ignored) { level = -1; }
-                    return new StoredPokemon(parts[0], parts[1], level);
+                    try {
+                        level = Integer.parseInt(parts[2]);
+                        if (level < 1 || level > 100) level = -1;
+                    } catch (NumberFormatException invalidLevel) {
+                        level = -1;
+                    }
+                    return new StoredPokemon(parts[0], species, level);
                 })
                 .filter(java.util.Objects::nonNull)
                 .toList();
